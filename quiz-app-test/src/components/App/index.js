@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Question from "../Question";
 import "./App.css";
+import Username from "../Username";
 
 import io from "socket.io-client";
 //variable we can use to connect to our socket io events happening on the back end
@@ -11,8 +12,7 @@ const initialState = [
     category: "Entertainment: Video Games",
     type: "boolean",
     difficulty: "easy",
-    question:
-      "&quot;Undertale&quot; is an RPG created by Toby Fox and released in 2015.",
+    question: "Tao loves Toby Fox <3",
     correct_answer: "True",
     incorrect_answers: ["False"],
   },
@@ -84,29 +84,42 @@ function App() {
       (correct_answer, i) => playerChoices[i] === correct_answer
     ).length;
   }
+
+  const [username, setUsername] = useState(null);
+
+  function handleUsernameSubmit(username) {
+    setUsername(username);
+    connection.emit("setUsername", { username });
+  }
+
   return (
     <>
-      <select
-        onChange={(event) => setSelectedCategoryIndex(event.target.value)}
-      >
-        {categories.map((category, i) => (
-          <option value={i}>{category.name}</option>
-        ))}
-      </select>
-      {isLoading && <p>Loading...</p>}
+      {!username && <Username handleUsernameSubmit={handleUsernameSubmit} />}
+      {username && <p>Hello {username}</p>}
+      {username && (
+        <select
+          onChange={(event) => setSelectedCategoryIndex(event.target.value)}
+        >
+          {categories.map((category, i) => (
+            <option value={i}>{category.name}</option>
+          ))}
+        </select>
+      )}
+      {username && isLoading && <p>Loading...</p>}
 
-      {questions.map((question, i) => (
-        <Question
-          playerChoice={playerChoices[i]}
-          showAnswer={!playing}
-          answer={question.correct_answer}
-          category={question.category}
-          question={question.question}
-          options={[...question.incorrect_answers, question.correct_answer]}
-          onSelect={(option) => addAnswer(option, i)}
-        />
-      ))}
-      <button onClick={handleSubmit}>Submit Answers</button>
+      {username &&
+        questions.map((question, i) => (
+          <Question
+            playerChoice={playerChoices[i]}
+            showAnswer={!playing}
+            answer={question.correct_answer}
+            category={question.category}
+            question={question.question}
+            options={[...question.incorrect_answers, question.correct_answer]}
+            onSelect={(option) => addAnswer(option, i)}
+          />
+        ))}
+      {username && <button onClick={handleSubmit}>Submit Answers</button>}
       {!playing && calculateScores()}
     </>
   );

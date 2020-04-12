@@ -19,10 +19,17 @@ const quiz = io.of("/quiz");
 
 let numberOfPlayers = 0;
 let currentQuestions = [];
+let users = [];
 
 function handlePlayers() {
   numberOfPlayers++;
   console.log("num of players" + numberOfPlayers);
+}
+
+function addUsername({ username }) {
+  const newUser = { username: username, playerId: numberOfPlayers };
+  users.push(newUser);
+  console.log("users:", users);
 }
 
 async function getQuestion(category) {
@@ -39,9 +46,14 @@ quiz.on("connection", (socket) => {
     success: true,
     payload: "You have joined the quiz",
   });
-  //listen for the event datafromplayer from the front end
+
+  socket.on("setUsername", (username) => {
+    addUsername(username);
+  });
+
   if (numberOfPlayers === 1) {
     socket.on("setCategory", async (category) => {
+      console.log("Client is setting the category");
       const questions = await getQuestion(category.categoryID);
       currentQuestions = questions;
       quiz.emit("chosenQuestions", { currentQuestions });

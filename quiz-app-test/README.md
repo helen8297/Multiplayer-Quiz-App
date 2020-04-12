@@ -26,9 +26,15 @@
 * [ ] real-time fastest finger first quiz
 
 ##SocketPlan
-[] 2 players in the same quiz in different rooms
-[] they see the same questions
-[] both answer the questions
+[x] 2 players in the same quiz in different rooms
+[x] they see the same questions
+[x] both answer the questions
+[] be able to give usernames in at the start
+ @ component on the front end with an input and button
+ @ conditional rendering to make that show up first
+ - send the username to the back end, save them in an object, ready for their scores to be saved
+ - Show usernames in the quiz app "Currently playing:"
+ - send all users from backend to front end
 [] after both submitted, scores are compared
 
 //install websockets on front end
