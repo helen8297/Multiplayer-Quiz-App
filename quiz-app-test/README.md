@@ -26,7 +26,7 @@
 * [ ] real-time fastest finger first quiz
 
 ##SocketPlan
-[] 2 players in the same room
+[] 2 players in the same quiz in different rooms
 [] they see the same questions
 [] both answer the questions
 [] after both submitted, scores are compared

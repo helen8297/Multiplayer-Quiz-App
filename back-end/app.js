@@ -17,29 +17,39 @@ const quiz = io.of("/quiz");
 //the emit sends the message to all sockets in the quizspace
 //playerconnected is an event that will happen when we code it on the front end
 
+let numberOfPlayers = 0;
+let currentQuestions = [];
+
+function handlePlayers() {
+  numberOfPlayers++;
+  console.log("num of players" + numberOfPlayers);
+}
+
 async function getQuestion(category) {
-  console.log(category, "category");
   const response = await axios(
     `https://opentdb.com/api.php?amount=10&category=${category}`
   );
-  console.log(response.data, "axios response.data");
   return response.data.results;
 }
 
 quiz.on("connection", (socket) => {
+  handlePlayers();
   console.log(socket.id);
   quiz.emit("playerConnected", {
     success: true,
     payload: "You have joined the quiz",
   });
   //listen for the event datafromplayer from the front end
-  socket.on("dataFromPlayer", (flowers) => {
-    console.log(flowers);
-  });
-  socket.on("setCategory", async (category) => {
-    const questions = await getQuestion(category.categoryID);
-    quiz.emit("questions", { questions });
-  });
+  if (numberOfPlayers === 1) {
+    socket.on("setCategory", async (category) => {
+      const questions = await getQuestion(category.categoryID);
+      currentQuestions = questions;
+      quiz.emit("chosenQuestions", { currentQuestions });
+    });
+  }
+  if (numberOfPlayers > 1) {
+    quiz.emit("chosenQuestions", { currentQuestions });
+  }
 });
 
 server.listen(PORT, () => console.log(`Listening on port ${PORT}`));

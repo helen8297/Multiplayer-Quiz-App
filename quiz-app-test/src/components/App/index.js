@@ -37,14 +37,10 @@ function App() {
     connection.on("playerConnected", (data) => {
       console.log(data, "player connected");
     });
-    connection.emit("dataFromPlayer", {
-      success: true,
-      payload: "player sends their regards",
-    });
-    connection.on("questions", ({ questions }) => {
-      console.log(questions, "questions");
-      setQuestions(questions);
-      setPlayerChoices(Array(questions.length).fill(null));
+    connection.on("chosenQuestions", ({ currentQuestions }) => {
+      console.log(currentQuestions, "questions");
+      setQuestions(currentQuestions);
+      setPlayerChoices(Array(currentQuestions.length).fill(null));
       setPlaying(true);
       setIsLoading(false);
     });
