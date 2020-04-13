@@ -18,12 +18,13 @@ const quiz = io.of("/quiz");
 //playerconnected is an event that will happen when we code it on the front end
 
 let numberOfPlayers = 0;
+
 let currentQuestions = [];
 let users = [];
+let connections = [null, null];
 
-function handlePlayers() {
+function handleConnection(socket, playerIndex) {
   numberOfPlayers++;
-  console.log("num of players" + numberOfPlayers);
 }
 
 function addUsername({ username }) {
@@ -40,12 +41,26 @@ async function getQuestion(category) {
 }
 
 quiz.on("connection", (socket) => {
-  handlePlayers();
-  console.log(socket.id);
+  let playerIndex = -1;
+
+  for (let i in connections) {
+    if (connections[i] === null) {
+      playerIndex = i;
+    }
+  }
+
   quiz.emit("playerConnected", {
     success: true,
-    payload: "You have joined the quiz",
+    payload: { message: "You have joined the quiz", id: playerIndex },
   });
+
+  if (playerIndex == -1) {
+    return;
+  }
+
+  connections[playerIndex] = socket.id;
+
+  console.log(connections);
 
   socket.on("setUsername", (username) => {
     addUsername(username);
@@ -62,6 +77,11 @@ quiz.on("connection", (socket) => {
   if (numberOfPlayers > 1) {
     quiz.emit("chosenQuestions", { currentQuestions });
   }
+
+  socket.on("disconnect", function () {
+    console.log(`Player ${playerIndex} Disconnected`);
+    connections[playerIndex] = null;
+  });
 });
 
 server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
