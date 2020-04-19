@@ -80,7 +80,7 @@ function App() {
   function handleSubmit() {
     setPlaying(false);
     const score = calculateScores();
-    connection.emit("finalScore", { score });
+    connection.emit("finalScore", { score, playerId });
   }
 
   function calculateScores() {

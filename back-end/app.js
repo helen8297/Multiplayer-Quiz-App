@@ -17,15 +17,10 @@ const quiz = io.of("/quiz");
 //the emit sends the message to all sockets in the quizspace
 //playerconnected is an event that will happen when we code it on the front end
 
-let numberOfPlayers = 0;
-
 let currentQuestions = [];
 let users = [];
 let connections = [null, null];
-
-function handleConnection(socket, playerIndex) {
-  numberOfPlayers++;
-}
+let scores = [null, null];
 
 function addUsername({ username }) {
   const newUser = { username: username, playerId: numberOfPlayers };
@@ -77,6 +72,11 @@ quiz.on("connection", (socket) => {
   if (numberOfPlayers > 1) {
     quiz.emit("chosenQuestions", { currentQuestions });
   }
+
+  socket.on("finalScore", (data) => {
+    const { score, playerId } = data;
+    score[playerId] = score;
+  });
 
   socket.on("disconnect", function () {
     console.log(`Player ${playerIndex} Disconnected`);
