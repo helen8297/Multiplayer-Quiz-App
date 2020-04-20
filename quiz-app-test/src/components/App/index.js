@@ -29,13 +29,15 @@ function App() {
   const [categories, setCategories] = useState([]);
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [playerId, setPlayerId] = useState(0);
   //const [correctAnswers, setCorrectAnswers] = useState([]);
-
+  console.log("player id:", playerId);
   //on mount our predefined connection thing - .on is a socket event
   //linked to the "playerConnected" emit on the backend.
   useEffect(() => {
     connection.on("playerConnected", (data) => {
       console.log(data, "player connected");
+      setPlayerId(data.payload.id);
     });
     connection.on("chosenQuestions", ({ currentQuestions }) => {
       console.log(currentQuestions, "questions");
@@ -77,6 +79,8 @@ function App() {
 
   function handleSubmit() {
     setPlaying(false);
+    const score = calculateScores();
+    connection.emit("finalScore", { score, playerId });
   }
 
   function calculateScores() {
